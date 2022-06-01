@@ -72,7 +72,7 @@ async def setup_mute_on_new_guild(event):
     await channel.edit(permission_overwrites=[overwrites])
 
 @bot.command
-@lightbulb.option("reason", "Why you muted them", required=False, type=str)
+@lightbulb.option("reason", "Why you muted them", required=False, default="No reason specified", type=str)
 @lightbulb.option("member", "Member to mute", required=True, type=hikari.User)
 @lightbulb.command("mute", "Kick a member")
 @lightbulb.implements(lightbulb.SlashCommand)
@@ -80,7 +80,6 @@ async def mute(ctx):
   member = ctx.options.member
   guild = ctx.get_guild()
   reason = ctx.options.reason
-  if not reason: reason = "No reason specified"
   role = ctx.member.get_top_role()
   if role:
     if role.permissions & hikari.Permissions.MANAGE_MESSAGES or ctx.member.id == guild.owner_id:
@@ -101,14 +100,13 @@ async def mute(ctx):
 
 
 @bot.command
-@lightbulb.option("reason", "Why you kicked them", required=False, type=str)
+@lightbulb.option("reason", "Why you kicked them", required=False, default="No reason specified", type=str)
 @lightbulb.option("member", "Member to kick", required=True, type=hikari.User)
 @lightbulb.command("kick", "Kick a member")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def kick(ctx):
   member = ctx.options.member
   reason = ctx.options.reason
-  if not reason: reason = "No reason specified"
   role = ctx.member.get_top_role()
   if role:
     if role.permissions & hikari.Permissions.KICK_MEMBERS or ctx.member.id == ctx.get_guild().owner_id:
@@ -124,7 +122,7 @@ async def kick(ctx):
 
 @bot.command
 @lightbulb.option("delete_message_days", "How many days of messages to delete", type=int, required=False, min_value=0, max_value=7)
-@lightbulb.option("reason", "Why you kicked them", required=False, type=str)
+@lightbulb.option("reason", "Why you banned them", required=False, default="No reason specified", type=str)
 @lightbulb.option("member", "Member to ban", required=True, type=hikari.User)
 @lightbulb.command("ban", "Ban a member")
 @lightbulb.implements(lightbulb.SlashCommand)
