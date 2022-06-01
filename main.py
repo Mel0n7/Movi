@@ -74,7 +74,7 @@ async def setup_mute_on_new_guild(event):
 @bot.command
 @lightbulb.option("reason", "Why you muted them", required=False, default="No reason specified", type=str)
 @lightbulb.option("member", "Member to mute", required=True, type=hikari.User)
-@lightbulb.command("mute", "Kick a member")
+@lightbulb.command("mute", "Mute a member")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def mute(ctx):
   member = ctx.options.member
@@ -96,6 +96,33 @@ async def mute(ctx):
       else:
         await ctx.respond(embed=hikari.Embed(title=f"✅ Muted {member}",color=LIGHT_GREEN))  
         await member.send(embed=hikari.Embed(title=f"You were muted from {guild.name}",description=f"You were muted for {reason}",color=LIGHT_YELLOW))
+        
+    else:
+      await ctx.respond(embed=hikari.Embed(title=f"❌ You dont have permissions to manage messages",color=LIGHT_RED))
+
+@bot.command
+@lightbulb.option("member", "Member to mute", required=True, type=hikari.User)
+@lightbulb.command("unmute", "Unmute a member")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def unmute(ctx):
+  member = ctx.options.member
+  guild = ctx.get_guild()
+  role = ctx.member.get_top_role()
+  if role:
+    if role.permissions & hikari.Permissions.MANAGE_MESSAGES or ctx.member.id == guild.owner_id:
+      muted = None
+      for role in await guild.fetch_roles():
+        if role.name == "Muted":
+          muted = role
+      if not muted:
+        muted = await bot.rest.create_role(guild=guild.id, name="Muted", mentionable=False)
+      try:
+        await member.remove_role(muted)
+      except hikari.errors.ForbiddenError:
+        await ctx.respond(embed=hikari.Embed(title=f"❌ Error", description="Hmm It looks like I dont have those permissions it may be because...\n -The Muted Role is above my role\n -I dont have the Manage Roles Permission", color=LIGHT_RED))
+      else:
+        await ctx.respond(embed=hikari.Embed(title=f"✅ Unmuted {member}",color=LIGHT_GREEN))  
+        await member.send(embed=hikari.Embed(title=f"You were unmuted from {guild.name}",color=LIGHT_GREEN))
         
     else:
       await ctx.respond(embed=hikari.Embed(title=f"❌ You dont have permissions to manage messages",color=LIGHT_RED))
