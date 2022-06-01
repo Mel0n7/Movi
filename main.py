@@ -101,7 +101,7 @@ async def mute(ctx):
       await ctx.respond(embed=hikari.Embed(title=f"❌ You dont have permissions to manage messages",color=LIGHT_RED))
 
 @bot.command
-@lightbulb.option("member", "Member to mute", required=True, type=hikari.User)
+@lightbulb.option("member", "Member to unmute", required=True, type=hikari.User)
 @lightbulb.command("unmute", "Unmute a member")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def unmute(ctx):
@@ -169,7 +169,23 @@ async def ban(ctx):
       await ctx.respond(embed=hikari.Embed(title=f"✅ Banned {member} from the server",color=LIGHT_GREEN))
       await member.ban(reason=reason, delete_message_days=delete_msg_days)
     else:
-      await ctx.respond(embed=hikari.Embed(title=f"❌ You dont have permissions to ban members",color=LIGHT_RED))
+      await ctx.respond(embed=hikari.Embed(title=f"❌ You dont have permissions to ban/unban members",color=LIGHT_RED))
+
+
+@bot.command
+@lightbulb.option("reason", "Why you unbanned them", required=False, default="No reason specified", type=str)
+@lightbulb.option("member", "Member to unban", required=True, type=hikari.User)
+@lightbulb.command("unban", "Unban a member")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def unban(ctx):
+  member = ctx.options.member 
+  role = ctx.member.get_top_role()
+  if role:
+    if role.permissions & hikari.Permissions.BAN_MEMBERS or ctx.member.id == ctx.get_guild().owner_id:
+      await ctx.respond(embed=hikari.Embed(title=f"✅ Unbanned {member} from the server",color=LIGHT_GREEN))
+      await ctx.get_guild().unban(member)
+    else:
+      await ctx.respond(embed=hikari.Embed(title=f"❌ You dont have permissions to ban/unban members",color=LIGHT_RED))
 
 
 bot.run()
