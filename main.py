@@ -83,18 +83,20 @@ async def mute(ctx):
   role = ctx.member.get_top_role()
   if role:
     if role.permissions & hikari.Permissions.MANAGE_MESSAGES or ctx.member.id == guild.owner_id:
-      try:
-        await member.send(embed=hikari.Embed(title=f"You were muted from {guild.name}",description=f"You were muted for {reason}",color=LIGHT_YELLOW))
-      except:
-        pass
-      await ctx.respond(embed=hikari.Embed(title=f"✅ Muted {member}",color=LIGHT_GREEN))
       muted = None
       for role in await guild.fetch_roles():
         if role.name == "Muted":
           muted = role
       if not muted:
         muted = await bot.rest.create_role(guild=guild.id, name="Muted", mentionable=False)
-      await member.add_role(muted.id)
+      try:
+        await member.add_role(muted)
+      except hikari.errors.ForbiddenError:
+        await ctx.respond(embed=hikari.Embed(title=f"❌ Error", description="Hmm It looks like I dont have those permissions it may be because...\n -The Muted Role is above my role\n -I dont have the Manage Roles Permission", color=LIGHT_RED))
+      else:
+        await ctx.respond(embed=hikari.Embed(title=f"✅ Muted {member}",color=LIGHT_GREEN))  
+        await member.send(embed=hikari.Embed(title=f"You were muted from {guild.name}",description=f"You were muted for {reason}",color=LIGHT_YELLOW))
+        
     else:
       await ctx.respond(embed=hikari.Embed(title=f"❌ You dont have permissions to manage messages",color=LIGHT_RED))
 
