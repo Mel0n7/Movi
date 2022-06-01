@@ -121,7 +121,7 @@ async def kick(ctx):
 
 
 @bot.command
-@lightbulb.option("delete_message_days", "How many days of messages to delete", type=int, required=False, min_value=0, max_value=7)
+@lightbulb.option("delete_message_days", "How many days of messages to delete", type=int, required=False, default=0, min_value=0, max_value=7)
 @lightbulb.option("reason", "Why you banned them", required=False, default="No reason specified", type=str)
 @lightbulb.option("member", "Member to ban", required=True, type=hikari.User)
 @lightbulb.command("ban", "Ban a member")
@@ -129,9 +129,7 @@ async def kick(ctx):
 async def ban(ctx):
   member = ctx.options.member  
   reason = ctx.options.reason
-  if not reason: reason = "No reason specified"
   delete_msg_days = ctx.options.delete_message_days
-  if not delete_msg_days: delete_msg_days = 0
   role = ctx.member.get_top_role()
   if role:
     if role.permissions & hikari.Permissions.BAN_MEMBERS or ctx.member.id == ctx.get_guild().owner_id:
