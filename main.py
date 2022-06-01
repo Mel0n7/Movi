@@ -83,9 +83,9 @@ async def mute(ctx):
   if not reason: reason = "No reason specified"
   role = ctx.member.get_top_role()
   if role:
-    if role.permissions & hikari.Permissions.MANAGE_MESSAGES or ctx.member.id == ctx.get_guild().owner_id:
+    if role.permissions & hikari.Permissions.MANAGE_MESSAGES or ctx.member.id == guild.owner_id:
       try:
-        await member.send(embed=hikari.Embed(title=f"You were muted from {ctx.get_guild().name}",description=f"You were muted for {reason}",color=LIGHT_YELLOW))
+        await member.send(embed=hikari.Embed(title=f"You were muted from {guild.name}",description=f"You were muted for {reason}",color=LIGHT_YELLOW))
       except:
         pass
       await ctx.respond(embed=hikari.Embed(title=f"✅ Muted {member}",color=LIGHT_GREEN))
